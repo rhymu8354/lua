@@ -13,10 +13,15 @@ Import("platformEnvironments")
 # Import other projects in the workspace on which this project depends.
 #Import("<other project name>")
 
+# Define products tree
+products = {}
+
+#### LuaLibrary
+
 # This is the name of the project, used to form the names of build products
 # such as the executable file name and the name of the directory
 # containing the object code.
-name = "lua"
+name = "LuaLibrary"
 
 # List all supported platforms here.
 # For each one, list any platform-specific dependencies.
@@ -39,26 +44,130 @@ platforms = {
 # listed in this project in the platforms list and must have a
 # corresponding platform build environment in order for the project
 # to be built for that platform.
-products = {
+products[name] = {
     "interface": [Dir("src")],
     "library": {}
 }
 for platform in platforms:
     if platform not in platformEnvironments:
         continue
-    env = platformEnvironments[platform].Clone()
+    env = platformEnvironments[platform].Clone(
+        PRODUCT = "lua"
+    )
     env.Append(CPPDEFINES = [])
     env.Append(CPPPATH = [])
-    env.Append(SOURCE_DIRECTORIES = ["src"])
+    env.Replace(SOURCE_DIRECTORIES = ["src"])
     env.Append(
         SOURCE_EXCLUDE = [
             "src/lua.c",
             "src/luac.c",
         ]
     )
-    products["library"][platform] = env.LibraryProject(
+    products[name]["library"][platform] = env.LibraryProject(
         name,
         platforms[platform]["deps"],
         platforms[platform]["libs"]
     )
+
+#### LuaInterpreter
+
+# This is the name of the project, used to form the names of build products
+# such as the executable file name and the name of the directory
+# containing the object code.
+name = "LuaInterpreter"
+
+# List all supported platforms here.
+# For each one, list any platform-specific dependencies.
+platforms = {
+    "arm-linux": {
+        # If the project depends on object/library code from another project
+        # in the workspace, list their build nodes here.
+        "deps": [
+            products["LuaLibrary"]["library"]["arm-linux"]["staticLibrary"],
+        ],
+
+        # If the project depends on additional system libraries,
+        # list their names here.
+        "libs": [
+            "m",
+        ],
+    },
+}
+
+# Build the program for every supported platform.  The platform must be
+# listed in this project in the platforms list and must have a
+# corresponding platform build environment in order for the project
+# to be built for that platform.
+products[name] = {}
+for platform in platforms:
+    if platform not in platformEnvironments:
+        continue
+    env = platformEnvironments[platform].Clone(
+        PRODUCT = "lua"
+    )
+    env.Append(CPPDEFINES = [])
+    env.Append(CPPPATH = [])
+    env.Replace(SOURCE_DIRECTORIES = [])
+    env.Append(
+        SOURCE_INCLUDE = [
+            "src/lua.c",
+        ]
+    )
+    products[name][platform] = env.ProgramProject(
+        name,
+        platforms[platform]["deps"],
+        platforms[platform]["libs"]
+    )
+
+#### LuaCompiler
+
+# This is the name of the project, used to form the names of build products
+# such as the executable file name and the name of the directory
+# containing the object code.
+name = "LuaCompiler"
+
+# List all supported platforms here.
+# For each one, list any platform-specific dependencies.
+platforms = {
+    "arm-linux": {
+        # If the project depends on object/library code from another project
+        # in the workspace, list their build nodes here.
+        "deps": [
+            products["LuaLibrary"]["library"]["arm-linux"]["staticLibrary"],
+        ],
+
+        # If the project depends on additional system libraries,
+        # list their names here.
+        "libs": [
+            "m",
+        ],
+    },
+}
+
+# Build the program for every supported platform.  The platform must be
+# listed in this project in the platforms list and must have a
+# corresponding platform build environment in order for the project
+# to be built for that platform.
+products[name] = {}
+for platform in platforms:
+    if platform not in platformEnvironments:
+        continue
+    env = platformEnvironments[platform].Clone(
+        PRODUCT = "luac"
+    )
+    env.Append(CPPDEFINES = [])
+    env.Append(CPPPATH = [])
+    env.Replace(SOURCE_DIRECTORIES = [])
+    env.Append(
+        SOURCE_INCLUDE = [
+            "src/luac.c",
+        ]
+    )
+    products[name][platform] = env.ProgramProject(
+        name,
+        platforms[platform]["deps"],
+        platforms[platform]["libs"]
+    )
+
+# Return products tree
 Return("products")
