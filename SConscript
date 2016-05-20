@@ -64,7 +64,6 @@ for platform in platforms:
         platform,
         interface,
         deps,
-        defaultLinkage = "shared"
     )
 
 #### LuaInterpreter
