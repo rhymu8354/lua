@@ -44,6 +44,7 @@ add_library(LuaLibrary STATIC
     src/loslib.c
     src/lparser.c
     src/lparser.h
+    src/lprefix.h
     src/lstate.c
     src/lstate.h
     src/lstring.h
@@ -60,6 +61,7 @@ add_library(LuaLibrary STATIC
     src/lualib.h
     src/lundump.c
     src/lundump.h
+    src/lutf8lib.c
     src/lvm.c
     src/lvm.h
     src/lzio.c
