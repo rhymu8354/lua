@@ -67,29 +67,29 @@ add_library(LuaLibrary STATIC
     src/lzio.c
     src/lzio.h
 )
-
 target_include_directories(LuaLibrary PUBLIC src)
+set_target_properties(LuaLibrary PROPERTIES
+    FOLDER Libraries/lua
+)
 
 add_executable(LuaInterpreter
     src/lua.c
 )
-
 target_link_libraries(LuaInterpreter
     LuaLibrary
 )
-
 set_target_properties(LuaInterpreter PROPERTIES 
     OUTPUT_NAME lua
+    FOLDER Libraries/lua
 )
 
 add_executable(LuaCompiler
     src/luac.c
 )
-
 target_link_libraries(LuaCompiler
     LuaLibrary
 )
-
 set_target_properties(LuaCompiler PROPERTIES 
     OUTPUT_NAME luac
+    FOLDER Libraries/lua
 )
