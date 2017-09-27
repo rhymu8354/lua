@@ -78,6 +78,9 @@ add_executable(LuaInterpreter
 target_link_libraries(LuaInterpreter
     LuaLibrary
 )
+if(UNIX)
+    target_link_libraries(LuaInterpreter m)
+endif(UNIX)
 set_target_properties(LuaInterpreter PROPERTIES 
     OUTPUT_NAME lua
     FOLDER Libraries/lua
@@ -89,6 +92,9 @@ add_executable(LuaCompiler
 target_link_libraries(LuaCompiler
     LuaLibrary
 )
+if(UNIX)
+    target_link_libraries(LuaCompiler m)
+endif(UNIX)
 set_target_properties(LuaCompiler PROPERTIES 
     OUTPUT_NAME luac
     FOLDER Libraries/lua
